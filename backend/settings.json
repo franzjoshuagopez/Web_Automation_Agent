@@ -1,0 +1,8 @@
+{
+  "max_elements": 500,
+  "loop_limit": 50,
+  "wait_time": 60,
+  "debug_mode": false,
+  "auto_screenshot": false,
+  "headless_mode": false
+}
