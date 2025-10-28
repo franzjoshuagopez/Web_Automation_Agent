@@ -132,6 +132,24 @@ async def get_dom_elements_by_page_id(page_id: int):
         return result.all()
 
 @with_retry(retries=3, delay=0.5, exceptions=(OperationalError, SQLAlchemyError))
+async def get_all_dom_elements():
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(select(DOMElement).order_by(DOMElement.id.desc()))
+        elements = result.scalars().all()
+
+        return [
+            {
+                "id": el.id,
+                "tag": el.tag,
+                "text": el.text,
+                "selector_type": el.selector_type,
+                "selector": el.selector,
+                "source_url": None,
+            }
+            for el in elements
+        ]
+
+@with_retry(retries=3, delay=0.5, exceptions=(OperationalError, SQLAlchemyError))
 async def create_run(goal: str):
     async with AsyncSessionLocal() as session:
         new_run = AutomationRun(goal=goal, status="running")

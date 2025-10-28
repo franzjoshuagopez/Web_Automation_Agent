@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Save } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import { API_BASE } from "@/config";
 
 export default function Settings() {
   const [maxElements, setMaxElements] = useState([100]);
@@ -19,7 +20,7 @@ export default function Settings() {
 
   useEffect(() => {
     const fetchSettings = async () => {
-      const res = await fetch("http://localhost:8000/api/settings");
+      const res = await fetch(`${API_BASE}/api/settings`);
       const data = await res.json();
       setMaxElements([data.max_elements]);
       setLoopLimit([data.loop_limit]);

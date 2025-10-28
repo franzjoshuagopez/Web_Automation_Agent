@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { API_BASE } from "@/config";
 
 interface DOMElement {
   index: number;
@@ -43,6 +44,27 @@ interface DOMElement {
   },
 })); */
 
+function getVisiblePages(current: number, total: number): (number | string)[] {
+  const pages: (number | string)[] = [];
+  const delta = 2;
+
+  const range = [
+    Math.max(2, current - delta),
+    Math.min(total - 1, current + delta),
+  ];
+
+  if (current - delta > 2) pages.push(1, "...");
+  else pages.push(...Array.from({length: range[0] - 1}, (_, i) => i+1));
+
+  for (let i = range[0]; i <= range[1]; i++) pages.push(i);
+
+  if (current + delta < total - 1) pages.push("...", total);
+  else if (range[1] < total) pages.push(...Array.from({length: total - range[1]}, (_, i) => range[1] + i + 1));
+
+  return pages;
+
+  }
+
 export default function Elements() {
   const [elements, setElements] = useState<DOMElement[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,20 +75,17 @@ export default function Elements() {
   useEffect(() => {
     const fetchElements = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/elements");
+        const res = await fetch(`${API_BASE}/api/elements`);
         const data = await res.json();
-        const mapped = Object.entries(data).flatMap(
-          ([url, elements]: [string, any[]]) =>
-            elements.map((el, i) => ({
-              index: i,
-              tag: el.tag,
-              text: el.text,
-              selectorType: el.selector_type,
-              selector: el.selector,
-              sourceUrl: url,
-              ...el,
-            }))
-        );
+        const mapped = data.map((el: any, i: number) => ({
+          index: i,
+          tag: el.tag,
+          text: el.text,
+          selectorType: el.selector_type,
+          selector: el.selector,
+          sourceUrl: el.source_url || "Unknown",
+          ...el,
+        }));
 
         setElements(mapped);
 
@@ -218,47 +237,35 @@ export default function Elements() {
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <p className="text-sm text-muted-foreground">
               Showing {startIndex + 1} to{" "}
               {Math.min(startIndex + itemsPerPage, filteredElements.length)} of{" "}
               {filteredElements.length} elements
             </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
+
+            <div className="flex items-center gap-2 flex-wrap justify-end">
+              {/*Prev Button */}
+              <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(1, p-1))} disabled={currentPage === 1}>
+                <ChevronLeft className="h-4 w-4"/>
               </Button>
-              <div className="flex items-center gap-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                      className={
-                        currentPage === page ? "gradient-primary" : ""
-                      }
-                    >
-                      {page}
-                    </Button>
-                  )
-                )}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRight className="h-4 w-4" />
+
+              {/*Dynamic Page Numbers*/}
+              {getVisiblePages(currentPage, totalPages).map((page, index) =>
+                typeof page === "string" ? (
+                  <span key={`dots-${index}`} className="px-2 text-muted-foreground">
+                    ...
+                  </span>
+                ) : (
+                  <Button key={page} variant={currentPage === page ? "default" : "outline"} size="sm" onClick={() => setCurrentPage(page)} className={currentPage === page ? "gradient-primary" : ""}>
+                    {page}
+                  </Button>
+                )
+              )}
+
+              {/*Next Button*/}
+              <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages, p+1))} disabled={currentPage === totalPages}>
+                <ChevronRight className="h-4 w-4"/>
               </Button>
             </div>
           </div>

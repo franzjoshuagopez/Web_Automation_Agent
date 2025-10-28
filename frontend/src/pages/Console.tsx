@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Play, Square, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
+import {WS_URL_BASE} from "@/config"
 
 interface LogEntry {
   id: number;
@@ -15,7 +17,7 @@ interface LogEntry {
   details?: string;
 }
 
-const WS_URL = (import.meta.env.VITE_WS_URL as string | undefined) || "ws://localhost:8000/ws/chat";
+const WS_URL = `${WS_URL_BASE}/ws/chat`;
 
 export default function Console() {
   const [goal, setGoal] = useState("");
@@ -161,11 +163,16 @@ export default function Console() {
           {/* Goal Input */}
           <Card className="p-6">
             <div className="flex gap-4">
-              <Input
+              <Textarea
                 placeholder="Enter automation goal (e.g., 'Sign up on Instagram')"
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && !isRunning && handleRun()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey && !isRunning) {
+                    e.preventDefault();
+                    handleRun();
+                  }
+                }}
                 disabled={isRunning}
                 className="flex-1 text-base"
               />

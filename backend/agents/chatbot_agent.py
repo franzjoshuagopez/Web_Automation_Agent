@@ -2,9 +2,9 @@ import re
 import asyncio
 from langchain_groq import ChatGroq
 from langgraph.types import Send
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage, ToolMessage
 from backend.agents.chatbot_state import ChatBotState
 from backend.utils.ws_manager import safe_broadcast
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage, ToolMessage
 from backend.utils.config import settings, max_history
 from backend.tools.web_automation_tools import selenium_toolkit, TOOLS_REGISTRY
 from backend.utils.logger import get_logger
@@ -133,8 +133,7 @@ def agent_web_automation(state: ChatBotState) -> ChatBotState:
     logger.info(f"TRIMMED MESSAGES: {trimmed_messages}")
 
     result = llm_with_tools.invoke(
-        [initial_prompt] + trimmed_messages,
-        config={"recursion_limit":100}
+        [initial_prompt] + trimmed_messages
         )
     
     if "reasoning_content" in result.additional_kwargs:

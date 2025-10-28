@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, Target, Activity, AlertCircle, Terminal } from "lucide-react";
 import { useEffect, useState } from "react";
+import {API_BASE} from "@/config"
 
 interface DashboardStats {
   elements_inspected: number;
@@ -22,6 +23,7 @@ interface RecentActions {
 
 export default function Dashboard() {
 
+
   const [stats, setStats] = useState<DashboardStats>({
     elements_inspected: 0,
     total_runtime: 0,
@@ -32,7 +34,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("http://localhost:8000/api/dashboard");
+      const res = await fetch(`${API_BASE}/api/dashboard`);
       const data = await res.json();
       setStats(data.stats);
       setRecentAction(data.recent_actions);
@@ -75,7 +77,7 @@ export default function Dashboard() {
             />
             <StatCard
               title="Total Runtime"
-              value={stats.total_runtime}
+              value={stats.total_runtime + " minutes"}
               icon={Clock}
               trend={{ value: "TBD", positive: true }}
             />

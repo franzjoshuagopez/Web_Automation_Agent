@@ -1,16 +1,17 @@
 import uuid
 from typing import cast, Any
-from fastapi import APIRouter, WebSocket
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.runnables import RunnableConfig
 from backend.agents.chatbot_state import ChatBotState
 from backend.graphs.chatbot_graph import chatbot_graph
 from backend.utils.ws_manager import connect, disconnect
 from backend.db.crud import get_or_create_conversation, add_message, load_conversation_state
 from backend.utils.decorators import with_retry
 from backend.utils.logger import get_logger
-from langchain_core.messages import HumanMessage, AIMessage
 from backend.tools.selenium_tools import DOM_CACHE
 import backend.tools.web_automation_tools as tools
-from backend.db.crud import count_elements, get_total_runtime, get_success_rate, get_failed_actions, get_recent_activity
+from backend.db.crud import count_elements, get_all_dom_elements, get_total_runtime, get_success_rate, get_failed_actions, get_recent_activity
 
 logger = get_logger(__name__)
 
@@ -71,27 +72,38 @@ async def chat_endpoint(websocket: WebSocket):
                 await add_message(conversation.id, "agent", text)
                 await websocket.send_text(text)
 
+    except WebSocketDisconnect:
+        logger.info("Client disconnected...")
+        await websocket.send_text("Client disconnected")
+        await websocket.close(code=1000)
+    
     except Exception as e:
         logger.exception("Agent call failed completely")
         fallback = "⚠️Failed: Sorry, something went wrong with the agent. Please call IT support."
         await websocket.send_text(fallback)
+        await websocket.close(code=1000)
     
     finally:
         disconnect(websocket)
+        
+        return
 
 @with_retry(retries=3, delay=1.0, exceptions=(Exception,))
 async def call_agent(agent, state):
     """
         agent handler function for retries
     """
-    return await agent.ainvoke(state)
+    config = RunnableConfig(recursion_limit=100)
+
+    return await agent.ainvoke(state, config=config)
 
 @router.get("/api/elements")
 async def get_elements():
     """
         Returns all DOM elements inspected so far
     """
-    return DOM_CACHE
+    dom_elements = await get_all_dom_elements()
+    return dom_elements
 
 @router.get("/api/dashboard")
 async def get_dashboard_summary():
