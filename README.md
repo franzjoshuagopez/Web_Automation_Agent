@@ -1,16 +1,33 @@
-# Web_Automation_Agent
-## Introduction
-This is one of my learning projects where I try to implement multiple tools from selenium to allow AI agents to automate web based tasks.
+# Web Automation Agent
 
-Programming languages:
-1. Python
-2. HTML
-3. CSS
-4. Typescript
+## 📌 Introduction
+This project is a learning experiment where I integrate Selenium with an AI agent system to perform automated web-based tasks.  
+The goal is to enable an AI agent to interact with web pages and perform actions automatically.
 
-Frameworks:
-1. Fast API
-2. REACT
+---
+## 🛠️ Tech Stack
+
+### **Languages**
+- Python
+- TypeScript
+- HTML / CSS
+
+### **Frameworks / Tools**
+- FastAPI (Backend)
+- React + Vite (Frontend)
+- Selenium (Web Automation)
+- LangGraph / LLM Agents (AI Logic)
+
+---
+
+## 🚀 Features
+- AI-driven web task automation
+- API backend with FastAPI
+- Web UI built using React
+- Real-time WebSocket communication
+- Selenium browser automation engine
+
+---
 
 ## Instructions
 
