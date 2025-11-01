@@ -3,11 +3,12 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import sessionmaker, declarative_base
 
+load_dotenv()
+
 ENV = os.getenv("ENV", "development")
 
 DATABASE_URL =""
 
-load_dotenv()
 
 if ENV == "production":
     DATABASE_URL = os.getenv("PRODUCTION_BASE_URL")
