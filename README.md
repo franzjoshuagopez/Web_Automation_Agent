@@ -13,3 +13,19 @@ Frameworks:
 
 ## Instructions
 
+1. Clone this repository
+2. In your code editor:
+- Open project root folder
+- In terminal run:
+  ```
+  python -m venv venv
+  ```
+- Activate the virtual enviornment:
+  ```
+  .\venv\Scripts\activate
+  ```
+- install requirements:
+  ```
+  pip install -r requirements.txt
+  ```
+
