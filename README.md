@@ -22,35 +22,35 @@ Frameworks:
   python -m venv venv
   ```
 - Activate the virtual enviornment:
-  ```
+  ```powerhsell
   .\venv\Scripts\activate
   ```
 - install requirements:
-  ```
+  ```powershell
   pip install -r requirements.txt
   ```
 - Go to folder frotnend
-```
+```powershell
 cd frontend
 ```
 - Run node js package installation
-```
+```powershell
 npm install
 ```
 - Go back to to root folder
-```
+```powershell
 cd ..
 ```
 3. Run the backend via uvicorn
-```
+```powershell
 $env:ENV="development"; uvicorn backend.main:app --reload
 ```
 4. Run the frontend
 - Open a separate terminal
-```
+```powershell
 cd frontend
 ```
-```
+```powershell
 npm run dev
 ```
 5. Go to on your browser:
