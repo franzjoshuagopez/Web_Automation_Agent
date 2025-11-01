@@ -18,7 +18,7 @@ Frameworks:
 2. In your code editor:
 - Open project root folder
 - In terminal run:
-  ```
+  ```powerhsell
   python -m venv venv
   ```
 - Activate the virtual enviornment:
